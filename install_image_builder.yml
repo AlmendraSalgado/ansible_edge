@@ -1,6 +1,7 @@
 ---
 - name: Install image builder
   hosts: all
+  gather_facts: false
   become: true
 
   pre_tasks:
