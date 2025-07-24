@@ -1,0 +1,28 @@
+---
+- name: Create the blueprint for our Red Hat Device Edge image and push it to the image-builder service
+  hosts: all
+  become: true
+
+  vars:
+    builder_blueprint_src_path: /tmp/blueprint-{{ builder_blueprint_name }}.toml
+    builder_blueprint_name: minimal-rhel92
+    builder_blueprint_distro: rhel-92
+    builder_blueprint_description: minimal blueprint for ostree commit
+
+  tasks:
+    - name: Create a blueprint
+      infra.osbuild.create_blueprint:  
+        dest: "{{ builder_blueprint_src_path }}"
+        name: "{{ builder_blueprint_name }}"
+        distro: "{{ builder_blueprint_distro | default(omit) }}"
+        description: "{{ builder_blueprint_description | default(omit) }}"
+        packages: "{{ builder_compose_pkgs  | default(omit) }}"
+        customizations: "{{ builder_compose_customizations  | default(omit) }}"
+        containers: "{{ builder_compose_containers | default(omit) }}"
+      register: builder_blueprint_output
+
+    - name: Push the blueprint into image builder
+      infra.osbuild.push_blueprint: 
+        src: "{{ builder_blueprint_src_path }}"
+
+
