@@ -7,7 +7,7 @@
     - name: Create utility user for accessing image builder through UI
       ansible.builtin.user:
         name: ansible
-        password: '$6.RKPn5YZZD6'
+        password: "{{ image_builder_server_user_password }}"
 
   tasks:
     - name: Run the role
