@@ -5,9 +5,6 @@
 
   vars:
     builder_blueprint_src_path: /tmp/blueprint-{{ builder_blueprint_name }}.toml
-    builder_blueprint_name: minimal-rhel92
-    builder_blueprint_distro: rhel-92
-    builder_blueprint_description: minimal blueprint for ostree commit
 
   tasks:
     - name: Create a blueprint
