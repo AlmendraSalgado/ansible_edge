@@ -8,6 +8,9 @@
     - name: Wait for SSH connection to the new EC2 instance
       ansible.builtin.wait_for_connection:
         timeout: 300
+    
+    - name: Gather facts
+      ansible.builtin.setup:
 
     - name: Create utility user for accessing image builder through UI
       ansible.builtin.user:
