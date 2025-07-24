@@ -12,6 +12,7 @@
       ansible.builtin.user:
         name: ansible
         password: "{{ image_builder_server_user_password | password_hash('sha512') }}"
+        group: wheel
 
   tasks:
     - name: Run the role
