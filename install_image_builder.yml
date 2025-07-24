@@ -3,6 +3,12 @@
   hosts: all
   become: true
 
+  pre_tasks:
+    - name: Create utility user for accessing image builder through UI
+      ansible.builtin.user:
+        name: ansible
+        password: '$6.RKPn5YZZD6'
+
   tasks:
     - name: Run the role
       ansible.builtin.import_role:
