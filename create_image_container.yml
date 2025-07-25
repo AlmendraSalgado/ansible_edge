@@ -4,9 +4,11 @@
   hosts: all
 
   tasks:  
-    - name: Ensure podman is installed
+    - name: Ensure required packages are installed
       ansible.builtin.dnf: 
-        name: podman
+        name: 
+          - podman
+          - pip
 
     - name: Install python requirements
       ansible.builtin.pip:
