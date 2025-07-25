@@ -4,7 +4,7 @@
   gather_facts: true
   become: true
 
-  tasks:
+  pre_tasks:
 
     - name: Create utility user for accessing image builder through UI
       ansible.builtin.user:
