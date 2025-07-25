@@ -1,5 +1,5 @@
 ---
-- name: Build a container for hosting the RPM OSTree image 
+- name: Build and push a container image for hosting the RPM OSTree image 
   become: true
   hosts: all
 
@@ -23,10 +23,21 @@
       ansible.builtin.file:
         path: "/var/www/html/{{ image_name }}/repo/.lock"
         state: absent
-        
+
     - name: Build container
       containers.podman.podman_image:
         name: "{{ image_name }}:{{ image_version }}"
         path: "/var/www/html/{{ image_name }}"
         build:
           format: oci
+
+  post_tasks:
+    - name: Read integrated registry information
+      redhat.openshift.openshift_registry_info:
+      register: registry
+
+    - name: Login into Openshift Internal registry
+      containers.podman.podman_login:
+        username: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        registry: "{{ registry.internal_hostname }}"
