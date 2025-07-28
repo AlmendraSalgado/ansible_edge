@@ -48,4 +48,5 @@
       containers.podman.podman_login:
         username: "{{ openshift_username | default('kubeadmin') }}"
         password: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-        registry: "{{ registry.internal_hostname }}"
+        registry: "{{ registry.public_hostname }}"
+        authfile: /tmp/auth.json
