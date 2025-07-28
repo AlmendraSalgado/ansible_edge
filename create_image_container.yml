@@ -50,3 +50,12 @@
         password: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
         registry: "{{ registry.public_hostname }}"
         authfile: /tmp/auth.json
+
+    - name: Push the into Openshift Internal registry
+      containers.podman.podman_image:
+        name: "{{ image_name }}:{{ image_version }}"
+        path: /path/to/build/dir
+        push: true
+        auth_file: /tmp/auth.json
+        push_args:
+          dest: "{{ registry.public_hostname }}"
