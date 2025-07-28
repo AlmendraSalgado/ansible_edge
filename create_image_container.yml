@@ -51,6 +51,24 @@
         registry: "{{ registry.public_hostname }}"
         authfile: /tmp/auth.json
 
+    - name: Ensure an OCP project exists
+      redhat.openshift.k8s:
+        state: present
+        resource_definition:
+          apiVersion: project.openshift.io/v1
+          kind: Project
+          metadata:
+            name: "{{ openshift_namespace }}"
+    
+    - name: Ensure an ImageStream exists in the project
+      redhat.openshift.k8s:
+        state: present
+        resource_definition:
+          apiVersion: image.openshift.io/v1
+          kind: ImageStream
+          metadata:
+            name: "{{ image_name }}"    
+
     - name: Push the into Openshift Internal registry
       containers.podman.podman_image:
         name: "{{ image_name }}:{{ image_version }}"
@@ -58,4 +76,4 @@
         push: true
         auth_file: /tmp/auth.json
         push_args:
-          dest: "{{ registry.public_hostname }}"
+          dest: "{{ registry.public_hostname }}/{{ openshift_namespace }}/{{ image_name }}/"
