@@ -39,16 +39,16 @@
 
   post_tasks:
     - debug:
-        msg: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        msg: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_USERNAME') }}"
     - debug:
         msg: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
     - debug:
-        msg: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-    - debug:
-        msg: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_KEY_FILE') }}"      
+        msg: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"    
 
     - name: Read integrated registry information
       redhat.openshift.openshift_registry_info:
+        username: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
       register: registry
 
     - name: Login into Openshift Internal registry
