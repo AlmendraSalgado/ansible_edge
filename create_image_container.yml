@@ -77,8 +77,7 @@
     - name: Push the into Openshift Internal registry
       containers.podman.podman_image:
         name: "{{ image_name }}:{{ image_version }}"
-        path: /path/to/build/dir
         push: true
         auth_file: /tmp/auth.json
         push_args:
-           dest: "docker://{{ registry.public_hostname }}/{{ openshift_namespace }}"
+           dest: "{{ registry.public_hostname }}/{{ openshift_namespace }}"
