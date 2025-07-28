@@ -12,3 +12,9 @@
     - name: Run the role
       ansible.builtin.import_role:
         name: infra.osbuild.builder
+      vars:
+        builder_blueprint_name: "{{ builder_blueprint_name }}"
+        builder_compose_type: edge-commit
+        builder_blueprint_import_file: /tmp/blueprint-{{ builder_blueprint_name }}.toml
+        builder_request_timeout: 2400
+        builder_wait_compose_timeout: 3600
