@@ -71,7 +71,8 @@
           apiVersion: image.openshift.io/v1
           kind: ImageStream
           metadata:
-            name: "{{ image_name }}"    
+            name: "{{ image_name }}"
+            namespace: "{{ openshift_namespace }}"
 
     - name: Push the into Openshift Internal registry
       containers.podman.podman_image:
