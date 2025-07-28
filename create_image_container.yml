@@ -44,11 +44,15 @@
         api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
       register: registry
 
+    - name: set fact
+      ansible.builtin.set_fact:
+        registry_url: "{{ registry.public_hostname }}"
+
     - name: Login into Openshift Internal registry
       containers.podman.podman_login:
         username: "{{ openshift_username | default('kubeadmin') }}"
         password: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-        registry: "{{ registry.public_hostname }}"
+        registry: "{{ registry_url }}"
         authfile: /tmp/auth.json
 
     - name: Ensure an OCP project exists
@@ -80,4 +84,4 @@
         push: true
         auth_file: /tmp/auth.json
         push_args:
-           dest: "{{ registry.public_hostname }}/{{ openshift_namespace }}"
+           dest: "{{ registry_url }}/{{ openshift_namespace }}"
