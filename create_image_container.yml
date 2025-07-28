@@ -81,4 +81,4 @@
         push: true
         auth_file: /tmp/auth.json
         push_args:
-          dest: "{{ registry.public_hostname }}/{{ openshift_namespace }}/{{ image_name }}/"
+          dest: "{{ registry.public_hostname }}/{{ openshift_namespace }}/{{ image_name }}:{{ image_version }}"
