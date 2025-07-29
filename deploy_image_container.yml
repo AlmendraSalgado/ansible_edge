@@ -1,0 +1,83 @@
+---
+- name: Deploy image container into Openshift
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Ensure an OCP project exists
+      redhat.openshift.k8s:
+        state: present
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        resource_definition:
+          apiVersion: project.openshift.io/v1
+          kind: Project
+          metadata:
+            name: "{{ openshift_namespace }}" 
+
+    - name: Create deployment
+      redhat.openshift.k8s:
+        state: present
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        resource_definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            namespace: "{{ openshift_namespace }}"
+            name: "deployment-{{ image_name }}"
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app.kubernetes.io/name: "{{ image_name }}-webserver"
+            spec:
+              containers:
+                - name: httpd
+                  image: "{{ registry_url }}/{{ image_name }}:{{ image_version }}"
+                  ports:
+                    - containerPort: 8080
+                      protocol: TCP
+                      name: httpd
+
+    - name: Create service
+      redhat.openshift.k8s:
+        state: present
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            namespace: "{{ openshift_namespace }}"
+            name: "service-{{ image_name }}"
+          spec:
+            selector:
+              app.kubernetes.io/name: "{{ image_name }}-webserver"
+            ports:
+              - name: http
+                protocol: TCP
+                port: 8080
+                targetPort: 8080
+
+    - name: Create route
+      redhat.openshift.k8s:
+        state: present
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        resource_definition:
+          apiVersion: route.openshift.io/v1
+          kind: Route
+          metadata:
+            namespace: "{{ openshift_namespace }}"
+            name: "route-{{ image_name }}"
+          spec:
+            to:
+              kind: Service
+              name: repo-webserver-http
+            port:
+              targetPort: 8080
+            tls:
+              termination: edge
+
+
