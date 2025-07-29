@@ -38,15 +38,10 @@
           format: oci
 
   post_tasks:
-    - name: Login to Openshift
-      redhat.openshift.k8s:
-        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-
     - name: Read integrated registry information
       redhat.openshift.openshift_registry_info:
-        # host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-        # api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
       register: registry
 
     # - name: set fact
@@ -63,8 +58,8 @@
     - name: Ensure an OCP project exists
       redhat.openshift.k8s:
         state: present
-        # host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-        # api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
         resource_definition:
           apiVersion: project.openshift.io/v1
           kind: Project
@@ -74,8 +69,8 @@
     - name: Ensure an ImageStream exists in the project
       redhat.openshift.k8s:
         state: present
-        # host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-        # api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
         resource_definition:
           apiVersion: image.openshift.io/v1
           kind: ImageStream
