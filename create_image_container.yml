@@ -78,6 +78,9 @@
             name: "{{ image_name }}"
             namespace: "{{ openshift_namespace }}"
 
+    - debug:
+        var: registry_url
+
     - name: Push the into Openshift Internal registry
       containers.podman.podman_image:
         name: "{{ image_name }}:{{ image_version }}"
