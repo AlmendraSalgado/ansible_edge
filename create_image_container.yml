@@ -58,33 +58,39 @@
     #     registry: "{{ registry_url }}"
     #     authfile: /tmp/auth.json
 
-    - name: Ensure an OCP project exists
-      redhat.openshift.k8s:
-        state: present
-        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-        resource_definition:
-          apiVersion: project.openshift.io/v1
-          kind: Project
-          metadata:
-            name: "{{ openshift_namespace }}"
+    # - name: Ensure an OCP project exists
+    #   redhat.openshift.k8s:
+    #     state: present
+    #     host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+    #     api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+    #     resource_definition:
+    #       apiVersion: project.openshift.io/v1
+    #       kind: Project
+    #       metadata:
+    #         name: "{{ openshift_namespace }}"
     
-    - name: Ensure an ImageStream exists in the project
-      redhat.openshift.k8s:
-        state: present
-        host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-        api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-        resource_definition:
-          apiVersion: image.openshift.io/v1
-          kind: ImageStream
-          metadata:
-            name: "{{ image_name }}"
-            namespace: "{{ openshift_namespace }}"
+    # - name: Ensure an ImageStream exists in the project
+    #   redhat.openshift.k8s:
+    #     state: present
+    #     host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+    #     api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+    #     resource_definition:
+    #       apiVersion: image.openshift.io/v1
+    #       kind: ImageStream
+    #       metadata:
+    #         name: "{{ image_name }}"
+    #         namespace: "{{ openshift_namespace }}"
+
+    - name: Login into quay.io
+      containers.podman.podman_login:
+        username: "{{ rhsm_username }}"
+        password: "{{ rhsm_password }}"
+        registry: quay.io
 
     - name: Push the into Openshift Internal registry
       containers.podman.podman_image:
         name: "{{ image_name }}:{{ image_version }}"
         push: true
-        auth_file: /tmp/auth.json
+        # auth_file: /tmp/auth.json
         push_args:
-           dest: "{{ registry_url }}/{{ openshift_namespace }}"
+           dest: "quay.io/asalgado"
