@@ -93,4 +93,4 @@
         push: true
         # auth_file: /tmp/auth.json
         push_args:
-           dest: "quay.io/asalgado"
+           dest: "{{ registry_url }}"
