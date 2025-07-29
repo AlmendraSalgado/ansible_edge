@@ -44,6 +44,9 @@
         api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
       register: registry
 
+    - debug:
+        var: registry
+
     # - name: set fact
     #   ansible.builtin.set_fact:
     #     registry_url: "{{ registry.internal_hostname }}"
