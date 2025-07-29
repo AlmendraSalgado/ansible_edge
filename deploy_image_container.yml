@@ -31,14 +31,18 @@
             selector:
               matchLabels:
                 app.kubernetes.io/name: "{{ image_name }}-webserver"
-            spec:
-              containers:
-                - name: httpd
-                  image: "{{ registry_url }}/{{ image_name }}:{{ image_version }}"
-                  ports:
-                    - containerPort: 8080
-                      protocol: TCP
-                      name: httpd
+            template:
+              metadata:
+                labels:
+                  app.kubernetes.io/name: "{{ image_name }}-webserver"
+              spec:
+                containers:
+                  - name: httpd
+                    image: "{{ registry_url }}/{{ image_name }}:{{ image_version }}"
+                    ports:
+                      - containerPort: 8080
+                        protocol: TCP
+                        name: httpd
 
     - name: Create service
       redhat.openshift.k8s:
