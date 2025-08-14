@@ -8,78 +8,17 @@
       ansible.builtin.dnf: 
         name: 
           - podman
-          - pip
 
-    - name: Install python requirements
-      ansible.builtin.pip:
-        name: kubernetes
+    - name: Get list of all created images
+      infra.osbuild.get_all_finished_images:
+      register: all_images
 
-    - name: Login into registry.redhat.io
-      containers.podman.podman_login:
-        username: "{{ rhsm_username }}"
-        password: "{{ rhsm_password }}"
-        registry: registry.redhat.io
+    - debug:
+        var: all_images
 
-    - name: Copy Containerfile to build directory
-      ansible.builtin.copy:
-        src: files/Containerfile
-        dest: "/var/www/html/{{ image_name }}/Containerfile"
-
-    - name: Dump the lock file
-      ansible.builtin.file:
-        path: "/var/www/html/{{ image_name }}/repo/.lock"
-        state: absent
-
-    - name: Build container
-      containers.podman.podman_image:
-        name: "{{ image_name }}:{{ image_version }}"
-        path: "/var/www/html/{{ image_name }}"
-        build:
-          format: oci
-
-  post_tasks:
-    # - name: Read integrated registry information
-    #   redhat.openshift.openshift_registry_info:
-    #     host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-    #     api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-    #   register: registry
-
-    # - debug:
-    #     var: registry
-
-    # - name: set fact
-    #   ansible.builtin.set_fact:
-    #     registry_url: "{{ registry.internal_hostname }}"
-
-    # - name: Login into Openshift Internal registry
-    #   containers.podman.podman_login:
-    #     username: "{{ openshift_username | default('kubeadmin') }}"
-    #     password: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-    #     registry: "{{ registry_url }}"
-    #     authfile: /tmp/auth.json
-
-    # - name: Ensure an OCP project exists
-    #   redhat.openshift.k8s:
-    #     state: present
-    #     host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-    #     api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-    #     resource_definition:
-    #       apiVersion: project.openshift.io/v1
-    #       kind: Project
-    #       metadata:
-    #         name: "{{ openshift_namespace }}"
-    
-    # - name: Ensure an ImageStream exists in the project
-    #   redhat.openshift.k8s:
-    #     state: present
-    #     host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
-    #     api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
-    #     resource_definition:
-    #       apiVersion: image.openshift.io/v1
-    #       kind: ImageStream
-    #       metadata:
-    #         name: "{{ image_name }}"
-    #         namespace: "{{ openshift_namespace }}"
+    # - name: Build container
+    #   containers.podman.podman_load:
+    #     input: "/var/www/html/{{ image_name }}"
 
     - name: Login into quay.io
       containers.podman.podman_login:
@@ -87,10 +26,9 @@
         password: "{{ rhsm_password }}"
         registry: quay.io
 
-    - name: Push the into Openshift Internal registry
-      containers.podman.podman_image:
-        name: "{{ image_name }}:{{ image_version }}"
-        push: true
-        # auth_file: /tmp/auth.json
-        push_args:
-           dest: "{{ registry_url }}"
+    # - name: Push the into Openshift Internal registry
+    #   containers.podman.podman_image:
+    #     name: "{{ image_name }}:{{ image_version }}"
+    #     push: true
+    #     push_args:
+    #        dest: "{{ registry_url }}"
