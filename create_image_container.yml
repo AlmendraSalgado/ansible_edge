@@ -16,9 +16,22 @@
     - debug:
         var: all_images
 
-    # - name: Build container
-    #   containers.podman.podman_load:
-    #     input: "/var/www/html/{{ image_name }}"
+    - name: Get newest image by job_created
+      set_fact:
+        newest_image: "{{ all_images.result.finished | sort(attribute='job_created') | last }}"
+
+    - name: Show newest image
+      debug:
+        var: newest_image
+
+    - name: Build container
+      containers.podman.podman_load:
+        input: "/var/www/html/{{ image_name }}/{{ newest_image.id }}-container.tar"
+      register:
+        podman_image
+
+    - debug:
+        var: podman_image        
 
     - name: Login into quay.io
       containers.podman.podman_login:
