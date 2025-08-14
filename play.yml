@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Wait for compose to finish
+      infra.osbuild.wait_compose:
+        compose_id: "{{ compose_id }}"
+        timeout: 3600
